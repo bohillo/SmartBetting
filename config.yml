@@ -1,0 +1,8 @@
+APP:
+  ODDS_URL: "https://www.efortuna.pl/ajax/zaklady-bukmacherskie/pilka-nozna-ms-2022/spotkania?type=M3823&timeTo=&rateFrom=&rateTo="
+  #from network requests analysis on the webpage
+
+RULES:
+  POINTS_PER_EXACT: 4 #Points for hitting the exact game result
+  POINTS_PER_GOAL_DIFF: 2 #Points for hitting the exact goals difference only (home - away)
+  POINTS_PER_WINNER: 1 #Points for hitting the game winner only
