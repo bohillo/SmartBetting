@@ -4,3 +4,4 @@ html5lib==1.1
 pandas==1.5.1
 numpy~=1.23.5
 PyYAML~=6.0
+shin~=0.0.2

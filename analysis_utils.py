@@ -1,8 +1,32 @@
 import pandas as pd
 import numpy as np
+from abc import ABC, abstractmethod
+import shin #https://github.com/mberk/shin
 
 
-def prepare_games_df(parsed_games: list) -> pd.DataFrame:
+class OddsProbsConverter(ABC):
+
+    @abstractmethod
+    def odds_to_probs(self, odds: list) -> list:
+        pass
+
+
+class NaiveOddsProbsConverter(OddsProbsConverter):
+
+    def odds_to_probs(self, odds: list) -> list:
+        inv_odds = [1/x for x in odds]
+        sum_inv_odds = sum(inv_odds)
+        return [x / sum_inv_odds for x in inv_odds]
+
+
+class ShinOddsProbsConverter(OddsProbsConverter):
+
+    def odds_to_probs(self, odds: list) -> list:
+        odds_list = [x for x in odds] # if pd.Series is passed
+        return shin.calculate_implied_probabilities(odds_list)['implied_probabilities']
+
+
+def prepare_games_df(parsed_games: list, odds_converter: OddsProbsConverter = NaiveOddsProbsConverter()) -> pd.DataFrame:
     """
     Cleans the data frame with odds by removing negative odds values and adds additional columns for convenience
     e.g. difference in home/away goals scored, winner (i.e. home, away or draw), probability.
@@ -16,9 +40,7 @@ def prepare_games_df(parsed_games: list) -> pd.DataFrame:
     df['winner'] = np.where(df['goals_diff'] > 0, 'home',
                             np.where(df['goals_diff'] < 0, 'away',
                                      'draw'))
-    df['odds_inv'] = 1 / df['odds']
-    df['sum_odds_inv'] = df.groupby(['home', 'away']).odds_inv.transform(np.sum)
-    df['prob'] = df['odds_inv'] / df['sum_odds_inv']
+    df['prob'] = df.groupby(['home', 'away']).odds.transform(odds_converter.odds_to_probs)
     return df
 
 

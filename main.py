@@ -1,6 +1,6 @@
 from utils import read_yaml
 from parsing_utils import parse_games
-from analysis_utils import prepare_games_df, analyze_games_df
+from analysis_utils import prepare_games_df, analyze_games_df, ShinOddsProbsConverter, NaiveOddsProbsConverter
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,6 +13,7 @@ config = read_yaml('config.yml')
 
 # Reading configuration
 URL = config['APP']['ODDS_URL']
+ODDS_TO_PROBS_METHOD = config['APP']['ODDS_TO_PROBS_METHOD']
 POINTS_PER_EXACT = config['RULES']['POINTS_PER_EXACT']
 POINTS_PER_GOAL_DIFF = config['RULES']['POINTS_PER_GOAL_DIFF']
 POINTS_PER_WINNER = config['RULES']['POINTS_PER_WINNER']
@@ -27,8 +28,15 @@ game_nodes = soup.findAll('div', attrs={'class': 'market-with-header'})
 parsed_games = parse_games(game_nodes)
 
 # Analyzing the odds
+if ODDS_TO_PROBS_METHOD == 'shin':
+    odds_converter = ShinOddsProbsConverter()
+    print('Using Shin method for implied odds')
+else:
+    odds_converter = NaiveOddsProbsConverter()
+    print('Using naive method for implied odds')
+
 # Transforming dicts to dataframe, cleaning, odds to probs
-games_df = prepare_games_df(parsed_games)
+games_df = prepare_games_df(parsed_games, odds_converter)
 
 # Cross joining all possible exact result bets with all possible outcomes and calculating potential points gained
 analysis_df = analyze_games_df(games_df=games_df,

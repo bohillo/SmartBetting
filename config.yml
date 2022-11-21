@@ -1,6 +1,7 @@
 APP:
   ODDS_URL: "https://www.efortuna.pl/ajax/zaklady-bukmacherskie/pilka-nozna-ms-2022/spotkania?type=M3823&timeTo=&rateFrom=&rateTo="
   #from network requests analysis on the webpage
+  ODDS_TO_PROBS_METHOD: shin #(shin or naive) algorithm for converting quoted odds to implied probabilities
 
 RULES:
   POINTS_PER_EXACT: 4 #Points for hitting the exact game result
