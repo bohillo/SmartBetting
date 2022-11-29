@@ -30,10 +30,10 @@ parsed_games = parse_games(game_nodes)
 # Analyzing the odds
 if ODDS_TO_PROBS_METHOD == 'shin':
     odds_converter = ShinOddsProbsConverter()
-    print('Using Shin method for implied odds')
+    print('Using Shin method for implied probs')
 else:
     odds_converter = NaiveOddsProbsConverter()
-    print('Using naive method for implied odds')
+    print('Using naive method for implied probs')
 
 # Transforming dicts to dataframe, cleaning, odds to probs
 games_df = prepare_games_df(parsed_games, odds_converter)
